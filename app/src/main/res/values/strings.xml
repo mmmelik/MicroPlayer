@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Micro Player</string>
+    <string name="sort_by">Sort by</string>
+    <string name="cast">Cast</string>
+</resources>
