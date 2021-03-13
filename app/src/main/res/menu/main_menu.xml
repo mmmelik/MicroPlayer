@@ -2,14 +2,13 @@
 <menu xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <item
-        android:id="@+id/main_menu_media_route_item"
-        android:title="@string/cast"
-        app:actionProviderClass="androidx.mediarouter.app.MediaRouteActionProvider"
-        android:icon="@drawable/mr_button_light"
-        app:showAsAction="always"/>
-    <item android:id="@+id/main_menu_sort_button"
+    <item android:id="@+id/dir_fragment_menu_sort_button"
         android:title="@string/sort_by"
         app:showAsAction="ifRoom"
         android:icon="@drawable/ic_baseline_sort_white_24"/>
+
+    <item android:id="@+id/dir_fragment_menu_refresh_button"
+        android:title="@string/refresh"
+        app:showAsAction="ifRoom"
+        android:icon="@drawable/ic_baseline_refresh_white_24"/>
 </menu>

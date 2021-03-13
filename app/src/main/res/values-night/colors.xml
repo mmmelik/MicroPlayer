@@ -1,9 +1,9 @@
 <!--?xml version="1.0" encoding="UTF-8"?-->
 <resources>
-  <!-- https://material.io/resources/color/#!/?view.left=0&view.right=1&secondary.color=e81a14&primary.color=707070 -->
-  <color name="primaryColor">#707070</color>
-  <color name="primaryLightColor">#9e9e9e</color>
-  <color name="primaryDarkColor">#454545</color>
+  <!-- https://material.io/resources/color/#!/?view.left=0&view.right=1&secondary.color=e81a14&primary.color=000000 -->
+  <color name="primaryColor">#000000</color>
+  <color name="primaryLightColor">#2c2c2c</color>
+  <color name="primaryDarkColor">#171717</color>
   <color name="secondaryColor">#e81a14</color>
   <color name="secondaryLightColor">#ff5d40</color>
   <color name="secondaryDarkColor">#ad0000</color>
