@@ -3,51 +3,69 @@ package app.microplayer;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
-import android.graphics.Matrix;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Environment;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
-import android.view.View;
-import android.widget.Button;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
-
-import org.videolan.libvlc.util.VLCUtil;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
 
-import app.microplayer.adapter.DirRecyclerAdapter;
-import app.microplayer.database.VideoService;
-import app.microplayer.model.Video;
-import app.microplayer.util.FileType;
+import app.microplayer.fragment.DirFragment;
+import app.microplayer.fragment.FileFragment;
 
 public class MainActivity extends AppCompatActivity {
-
-
+    private FrameLayout container;
+    private DirFragment dirFragment;
+    private boolean canGoBack=false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        FragmentManager fragmentManager=getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction=fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.fragment_container,new DirFragment()).commit();
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+
+        container=findViewById(R.id.fragment_container);
+        dirFragment=new DirFragment();
+        switchPage(dirFragment);
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        int id=item.getItemId();
+        if (id==android.R.id.home){
+            switchPage(dirFragment);
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    public void switchPage(Fragment fragment){
+        FragmentManager fragmentManager=getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction=fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.fragment_container,fragment).commit();
+
+        canGoBack=fragment instanceof FileFragment;
+        getSupportActionBar().setDisplayHomeAsUpEnabled(fragment instanceof FileFragment);
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (canGoBack){
+            switchPage(dirFragment);
+        }else {
+            super.onBackPressed();
+        }
+    }
+
+    public void changeTitle(String title){
+        getSupportActionBar().setTitle(title);
     }
 }

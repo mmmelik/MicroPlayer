@@ -2,6 +2,7 @@ package app.microplayer.adapter;
 
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.util.ArrayMap;
 import android.util.Log;
@@ -9,9 +10,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -20,6 +23,9 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.EncodeStrategy;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 
 import org.videolan.libvlc.LibVLC;
 import org.videolan.libvlc.Media;
@@ -37,6 +43,7 @@ import app.microplayer.model.Video;
 
 public class DirRecyclerAdapter extends RecyclerView.Adapter<DirRecyclerAdapter.ViewHolder> {
 
+    private OnItemClickListener onItemClickListener;
     private static final int TYPE_LIST=1;
     private static final int TYPE_GRID=2;
     private LinkedHashMap<File,List<Video>> videoMap;
@@ -96,6 +103,7 @@ public class DirRecyclerAdapter extends RecyclerView.Adapter<DirRecyclerAdapter.
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
+        View container;
         TextView name;
         TextView count;
         ImageView image;
@@ -106,12 +114,14 @@ public class DirRecyclerAdapter extends RecyclerView.Adapter<DirRecyclerAdapter.
         public ViewHolder(@NonNull View itemView,int viewType) {
             super(itemView);
             if (viewType==TYPE_GRID){
+                container=itemView.findViewById(R.id.list_item_dir_grid_container);
                 name=itemView.findViewById(R.id.list_item_dir_grid_name);
                 count=itemView.findViewById(R.id.list_item_dir_grid_count);
                 image1=itemView.findViewById(R.id.collection_image_1);
                 image2=itemView.findViewById(R.id.collection_image_2);
                 image3=itemView.findViewById(R.id.collection_image_3);
             }else {
+                container=itemView.findViewById(R.id.list_item_dir_container);
                 name=itemView.findViewById(R.id.list_item_dir_name);
                 count=itemView.findViewById(R.id.list_item_dir_count);
                 image=itemView.findViewById(R.id.list_item_dir_image);
@@ -122,15 +132,22 @@ public class DirRecyclerAdapter extends RecyclerView.Adapter<DirRecyclerAdapter.
             File key=new ArrayList<>(videoMap.keySet()).get(position);
             List<Video> videos=videoMap.get(key);
 
+            container.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    onItemClickListener.onClick(key.getAbsolutePath());
+                }
+            });
+
             name.setText(key.getName());
 
             if (getItemViewType()==TYPE_GRID){
                 if (videos.size()>=1) {
-                    Glide.with(image1).load(videos.get(videos.size() - 1).getPath()).into(image1);
+                    Glide.with(image1).load(videos.get(videos.size() - 1).getPath()).listener(requestListener).into(image1);
                     if (videos.size()>=2){
-                        Glide.with(image2).load(videos.get(videos.size()-2).getPath()).into(image2);
+                        Glide.with(image2).load(videos.get(videos.size()-2).getPath()).listener(requestListener).into(image2);
                         if (videos.size()>=3){
-                            Glide.with(image2).load(videos.get(videos.size()-3).getPath()).into(image2);
+                            Glide.with(image2).load(videos.get(videos.size()-3).getPath()).listener(requestListener).into(image2);
                         }
                     }
                 }
@@ -146,8 +163,24 @@ public class DirRecyclerAdapter extends RecyclerView.Adapter<DirRecyclerAdapter.
                     count.setText(videos.size()+count.getContext().getResources().getString(R.string.item));
                 }
             }
-
         }
+
+        private RequestListener<Drawable> requestListener=new RequestListener<Drawable>() {
+            @Override
+            public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                if (e!=null){
+                    //e.printStackTrace();
+                }
+                return false;
+            }
+
+            @Override
+            public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                //Log.d("width", String.valueOf(resource.getMinimumWidth()));
+                //Log.d("height", String.valueOf(resource.getMinimumHeight()));
+                return false;
+            }
+        };
     }
 
     public void setVideos(List<Video> videoList){
@@ -159,5 +192,13 @@ public class DirRecyclerAdapter extends RecyclerView.Adapter<DirRecyclerAdapter.
         }
         videoMap=prepareVideoMap(filteredList);
         notifyDataSetChanged();
+    }
+
+    public interface OnItemClickListener{
+        void onClick(String path);
+    }
+
+    public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
+        this.onItemClickListener = onItemClickListener;
     }
 }

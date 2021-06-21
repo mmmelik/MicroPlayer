@@ -1,21 +1,25 @@
 package app.microplayer.model;
 
+import androidx.annotation.NonNull;
 import androidx.room.Entity;
+import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
-@Entity
+@Entity(indices = {@Index(value = "path",unique = true)})
 public class Video {
 
     @PrimaryKey(autoGenerate = true)
     private long id;
 
+    @NonNull
     private String path;
 
     private String thumbPath;
 
     private boolean hidden;
 
-    public Video() {
+    public Video(@NonNull String path) {
+        this.path=path;
     }
 
     public long getId() {

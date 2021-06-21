@@ -27,6 +27,10 @@ public class VideoService {
         return videoDAO.getVideoById(id);
     }
 
+    public LiveData<List<Video>> getAllOf(String path){
+        return videoDAO.getAllOf(path);
+    }
+
     public void addVideo(Video video,JobListener jobListener){
         new Thread(){
             @Override
@@ -103,4 +107,5 @@ public class VideoService {
         void onFinish();
         void onFail(Exception e);
     }
+
 }

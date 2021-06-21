@@ -1,4 +1,4 @@
-package app.microplayer;
+package app.microplayer.fragment;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -14,7 +14,6 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.app.AppCompatDelegate;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -25,9 +24,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import app.microplayer.MainActivity;
+import app.microplayer.R;
 import app.microplayer.adapter.DirRecyclerAdapter;
 import app.microplayer.database.VideoService;
 import app.microplayer.model.Video;
+import app.microplayer.util.Constants;
 import app.microplayer.util.FileType;
 
 public class DirFragment extends Fragment {
@@ -71,6 +73,18 @@ public class DirFragment extends Fragment {
         recyclerView=view.findViewById(R.id.main_dir_list_recycler_view);
         recyclerView.setLayoutManager(gridLayoutManager);
         recyclerView.setAdapter(dirRecyclerAdapter);
+        dirRecyclerAdapter.setOnItemClickListener(new DirRecyclerAdapter.OnItemClickListener() {
+            @Override
+            public void onClick(String path) {
+                Log.d("folder_path",path);
+                FileFragment fileFragment=new FileFragment();
+                Bundle args=new Bundle();
+                args.putString(Constants.ARGS_FOLDER_PATH,path);
+                fileFragment.setArguments(args);
+                ((MainActivity)getActivity()).switchPage(fileFragment);
+            }
+        });
+        ((MainActivity)getActivity()).changeTitle(getString(R.string.app_name));
     }
 
     @Override
@@ -94,7 +108,7 @@ public class DirFragment extends Fragment {
             }
             return true;
         }else if (id==R.id.dir_fragment_menu_refresh_button){
-            /*new Thread(){
+            new Thread(){
                 @Override
                 public void run() {
                     scanFiles();
@@ -110,14 +124,7 @@ public class DirFragment extends Fragment {
                         }
                     });
                 }
-            }.start();*/
-            if(AppCompatDelegate.getDefaultNightMode()!=AppCompatDelegate.MODE_NIGHT_YES){
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-            }else {
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-            }
-
-
+            }.start();
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -152,8 +159,7 @@ public class DirFragment extends Fragment {
                 if (file.isDirectory()){
                     findVideos(file);
                 }else if(FileType.isSupported(file)){
-                    Video video=new Video();
-                    video.setPath(file.getAbsolutePath());
+                    Video video=new Video(file.getAbsolutePath());
                     videos.add(video);
                 }
             }

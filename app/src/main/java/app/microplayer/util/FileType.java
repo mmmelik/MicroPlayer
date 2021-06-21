@@ -4,10 +4,11 @@ import android.util.Log;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class FileType {
-    private static List<String> extensionList=List.of("mp4","m4a","fmp4","webm","mp3","ogg","wav","ts","ps","flv","aac","amr","mkv");
+    private static List<String> extensionList= Arrays.asList("mp4", "m4a", "fmp4", "webm", "mp3", "ogg", "wav", "ts", "ps", "flv", "aac", "amr", "mkv");
 
     public static boolean isSupported(File file){
         String path=file.getPath();
